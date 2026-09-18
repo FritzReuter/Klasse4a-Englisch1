@@ -112,11 +112,12 @@
       display: none;
       max-width: 1100px;
       margin: auto;
-      background: white;
-      padding: 2em;
-      border-radius: 20px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 0;
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
       text-align: left;
+      overflow-x: auto;
     }
 
     .overview-table {
@@ -177,6 +178,101 @@
     .top-toggle {
       margin: 0 auto 2em;
       text-align: center;
+    }
+
+    @media (max-width: 700px) {
+
+      body {
+        padding: 1em;
+      }
+
+      .table-view {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+      }
+
+      .overview-table {
+        width: 100%;
+        table-layout: fixed;
+      }
+
+      .overview-table .topic-name {
+        width: 28%;
+      }
+
+      .overview-table .language-head {
+        width: 36%;
+      }
+
+      .overview-table .empty-topic-cell {
+        width: 28%;
+      }
+
+      .overview-table th,
+      .overview-table td {
+        padding: 0.55em 0.4em;
+        overflow-wrap: anywhere;
+      }
+    }
+
+
+    .bottom-actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5em;
+      margin: 2em auto 0;
+    }
+
+    .bottom-actions .view-toggle-wrap {
+      margin: 0;
+    }
+
+    .share-btn {
+      width: 46px;
+      height: 46px;
+      min-width: 46px;
+      padding: 0;
+      margin: 0.5em;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #607d8b;
+      color: white;
+    }
+
+    .share-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: currentColor;
+    }
+
+    .qr-view {
+      display: none;
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+    }
+
+    #qrCode {
+      display: inline-block;
+      padding: 16px;
+      background: white;
+      border-radius: 10px;
+    }
+
+    #qrCode canvas,
+    #qrCode img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .qr-url {
+      margin-top: 1em;
+      overflow-wrap: anywhere;
+      font-size: 0.9em;
     }
 
   </style>
@@ -369,21 +465,53 @@
   </div>
 
 
-  <!-- Umschalter Formular / Tabelle -->
+  <!-- Umschalter Formular / Tabelle + Teilen -->
 
-  <div class="view-toggle-wrap">
+  <div class="bottom-actions" id="bottomActions">
+    <div class="view-toggle-wrap">
+      <button
+        class="view-toggle-btn"
+        id="viewToggleButton"
+        onclick="toggleView()"
+      >
+        Tabelle anzeigen
+      </button>
+    </div>
+
     <button
-      class="view-toggle-btn"
-      id="viewToggleButton"
-      onclick="toggleView()"
+      class="share-btn"
+      id="shareButton"
+      onclick="showQrCode()"
+      aria-label="Teilen"
+      title="Teilen"
     >
-      Tabelle anzeigen
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.2 3.2 0 0 0 0-1.39l7.05-4.11A2.99 2.99 0 1 0 15 5c0 .23.03.45.08.66L8.03 9.77a3 3 0 1 0 0 4.46l7.12 4.16c-.05.2-.08.41-.08.61A2.93 2.93 0 1 0 18 16.08Z"/>
+      </svg>
     </button>
   </div>
 
 
-<script>
+  <!-- QR-Code-Ansicht -->
 
+  <div class="qr-view" id="qrView">
+    <button
+      class="view-toggle-btn"
+      onclick="showFormView()"
+    >
+      Formular anzeigen
+    </button>
+
+    <div id="qrCode"></div>
+
+    <div class="qr-url" id="qrUrlText"></div>
+  </div>
+
+
+
+<script src="qrcode.min.js"></script>
+  
+<script>
 
 /*
  * ============================================================
@@ -1983,6 +2111,9 @@ function buildOverviewTable() {
 
 function toggleView() {
 
+  document.getElementById("qrView").style.display = "none";
+  document.getElementById("bottomActions").style.display = "flex";
+
   const formView =
     document.getElementById(
       "formView"
@@ -2037,6 +2168,54 @@ function toggleView() {
 
   }
 
+}
+
+
+/*
+ * ============================================================
+ * QR-Code / Teilen
+ * ============================================================
+ */
+
+const qrUrl =
+  "https://fritzreuter.github.io/Klasse4a-Englisch1";
+
+let qrCodeCreated = false;
+
+function showQrCode() {
+
+  document.getElementById("formView").style.display = "none";
+  document.getElementById("tableView").style.display = "none";
+  document.getElementById("bottomActions").style.display = "none";
+  document.getElementById("qrView").style.display = "block";
+
+  document.getElementById("qrUrlText").textContent = qrUrl;
+
+  if (!qrCodeCreated) {
+
+    new QRCode(
+      document.getElementById("qrCode"),
+      {
+        text: qrUrl,
+        width: 300,
+        height: 300,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      }
+    );
+
+    qrCodeCreated = true;
+  }
+}
+
+function showFormView() {
+
+  document.getElementById("qrView").style.display = "none";
+  document.getElementById("tableView").style.display = "none";
+  document.getElementById("formView").style.display = "block";
+  document.getElementById("bottomActions").style.display = "flex";
+  document.getElementById("viewToggleButton").innerText = "Tabelle anzeigen";
 }
 
 
