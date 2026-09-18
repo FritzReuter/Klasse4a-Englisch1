@@ -137,7 +137,7 @@
       background-color: #ffd54f;
       color: #222;
       font-size: 1.1em;
-      border-top: none;
+      border-top: 1.2em solid white;
     }
 
     .overview-table .topic-row:first-child th {
@@ -330,6 +330,28 @@
     body.dark-mode .overview-table th, body.dark-mode .overview-table td { border-bottom-color: #444; }
     body.dark-mode .overview-table .topic-row th { border-top-color: #17191a; }
 
+
+    /* Einheitliche Navigation in Tabelle, Einstellungen und QR-Ansicht */
+    .top-toggle, .settings-nav, .qr-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5em;
+    }
+    .top-toggle { margin: 0 auto 2em; }
+    .settings-nav { margin: 0 auto 1.5em; }
+    .qr-nav { margin: 1.5em auto 0; }
+    .top-toggle .view-toggle-btn, .settings-nav .view-toggle-btn, .qr-nav .view-toggle-btn {
+      min-width: 190px;
+    }
+    @media (max-width: 700px) {
+      .top-toggle, .settings-nav, .qr-nav { gap: 0.25em; }
+      .top-toggle .view-toggle-btn, .settings-nav .view-toggle-btn, .qr-nav .view-toggle-btn {
+        min-width: 0;
+        flex: 1 1 auto;
+      }
+    }
+
   </style>
 </head>
 
@@ -507,14 +529,11 @@
 
   <div class="table-view" id="tableView">
 
-    <div class="view-toggle-wrap top-toggle">
-      <button
-        class="view-toggle-btn"
-        onclick="toggleView()"
-      >
-        Formular anzeigen
-      </button>
-    </div>
+    <div class="bottom-actions top-toggle">
+<button class="settings-btn" onclick="showSettings()" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.2 7.2 0 0 0-1.62-.94L14.38 2.8a.49.49 0 0 0-.49-.4h-3.84a.49.49 0 0 0-.49.4l-.36 2.52c-.58.24-1.12.56-1.62.94L5.19 5.3a.5.5 0 0 0-.61.22L2.66 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.05.31-.08.65-.08.94s.03.63.08.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .61.22l2.39-.96c.5.38 1.04.7 1.62.94l.36 2.52c.04.24.24.4.49.4h3.84c.25 0 .45-.16.49-.4l.36-2.52c.58-.24 1.12-.56 1.62-.94l2.39.96a.5.5 0 0 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.02-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></button>
+<button class="view-toggle-btn" onclick="showFormView()">Formular anzeigen</button>
+<button class="share-btn" onclick="showQrCode()" aria-label="Teilen" title="Teilen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.2 3.2 0 0 0 0-1.39l7.05-4.11A2.99 2.99 0 1 0 15 5c0 .23.03.45.08.66L8.03 9.77a3 3 0 1 0 0 4.46l7.12 4.16c-.05.2-.08.41-.08.61A2.93 2.93 0 1 0 18 16.08Z"/></svg></button>
+</div>
 
     <table class="overview-table" id="overviewTable"></table>
   </div>
@@ -553,23 +572,25 @@
   <!-- QR-Code-Ansicht -->
 
   <div class="qr-view" id="qrView">
-    <button
-      class="view-toggle-btn qr-form-button"
-      onclick="showFormView()"
-    >
-      Formular anzeigen
-    </button>
-
     <div id="qrCode"></div>
+
+    <div class="bottom-actions qr-nav">
+<button class="settings-btn" onclick="showSettings()" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.2 7.2 0 0 0-1.62-.94L14.38 2.8a.49.49 0 0 0-.49-.4h-3.84a.49.49 0 0 0-.49.4l-.36 2.52c-.58.24-1.12.56-1.62.94L5.19 5.3a.5.5 0 0 0-.61.22L2.66 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.05.31-.08.65-.08.94s.03.63.08.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .61.22l2.39-.96c.5.38 1.04.7 1.62.94l.36 2.52c.04.24.24.4.49.4h3.84c.25 0 .45-.16.49-.4l.36-2.52c.58-.24 1.12-.56 1.62-.94l2.39.96a.5.5 0 0 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.02-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></button>
+<button class="view-toggle-btn" onclick="showFormView()">Formular anzeigen</button>
+<button class="share-btn" onclick="showQrCode()" aria-label="Teilen" title="Teilen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.2 3.2 0 0 0 0-1.39l7.05-4.11A2.99 2.99 0 1 0 15 5c0 .23.03.45.08.66L8.03 9.77a3 3 0 1 0 0 4.46l7.12 4.16c-.05.2-.08.41-.08.61A2.93 2.93 0 1 0 18 16.08Z"/></svg></button>
+</div>
 
     <div class="qr-url" id="qrUrlText"></div>
   </div>
 
-
   <!-- Einstellungen -->
   <div class="settings-view" id="settingsView">
     <div class="settings-card">
-      <button class="view-toggle-btn" onclick="showFormView()">Formular anzeigen</button>
+      <div class="bottom-actions settings-nav">
+<button class="settings-btn" onclick="showSettings()" aria-label="Einstellungen" title="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.07-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.61-.22l-2.39.96a7.2 7.2 0 0 0-1.62-.94L14.38 2.8a.49.49 0 0 0-.49-.4h-3.84a.49.49 0 0 0-.49.4l-.36 2.52c-.58.24-1.12.56-1.62.94L5.19 5.3a.5.5 0 0 0-.61.22L2.66 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.05.31-.08.65-.08.94s.03.63.08.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .61.22l2.39-.96c.5.38 1.04.7 1.62.94l.36 2.52c.04.24.24.4.49.4h3.84c.25 0 .45-.16.49-.4l.36-2.52c.58-.24 1.12-.56 1.62-.94l2.39.96a.5.5 0 0 0 .61-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.02-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8a3.5 3.5 0 0 1 0 7.5Z"/></svg></button>
+<button class="view-toggle-btn" onclick="showFormView()">Formular anzeigen</button>
+<button class="share-btn" onclick="showQrCode()" aria-label="Teilen" title="Teilen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7a3.2 3.2 0 0 0 0-1.39l7.05-4.11A2.99 2.99 0 1 0 15 5c0 .23.03.45.08.66L8.03 9.77a3 3 0 1 0 0 4.46l7.12 4.16c-.05.2-.08.41-.08.61A2.93 2.93 0 1 0 18 16.08Z"/></svg></button>
+</div>
       <div class="settings-section">
         <h2>Dark Mode</h2>
         <div class="theme-row"><span id="themeLabel">Hell</span><label class="theme-switch"><input type="checkbox" id="darkModeToggle" onchange="setDarkMode(this.checked)"><span class="theme-slider"></span></label></div>
